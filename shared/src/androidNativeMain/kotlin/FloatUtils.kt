@@ -48,7 +48,7 @@ fun toNativeSFloat(
 }
 
 @CName("Java_org_pampanet_mobile_myapplication_FloatUtils_fromNativeSFloat")
-fun fromNativeSFloat(env: CPointer<JNIEnvVar>, clazz: jclass, num: jfloat): jint = memScoped {
+fun fromNativeSFloat(env: CPointer<JNIEnvVar>, clazz: jclass, num: jfloat): jint = jniWith(env) {
     return write_sfloat(num).toInt()
 }
 

@@ -12,6 +12,7 @@ version = "1.0"
 
 val libsDir = projectDir.resolve("src/coreNative")
 
+
 val androidPresets = mapOf(
     "androidNativeArm32" to "$libsDir/armeabi-v7a",
     "androidNativeArm64" to "$libsDir/arm64-v8a",
@@ -24,7 +25,7 @@ kotlin {
         publishLibraryVariants("release")
     }
     androidNativeX86() {
-        binaries { sharedLib() }//"corenative", listOf(RELEASE)) }
+        binaries { sharedLib() }
         configureCInterops(this)
         renameLib(this)
     }
@@ -148,14 +149,14 @@ fun configureCInterops(it: KotlinNativeTarget, compilationName: String  = "main"
     it.compilations[compilationName].cinterops {
         val core by creating {
             defFile("$libsDir/core.def")
-            val javaHome = File(System.getenv("JAVA_HOME"))
-            headers("$javaHome/include/jni.h","$libsDir/core.h", "$libsDir/core.c")
+            //val javaHome = File(System.getenv("JAVA_HOME"))
+            headers(/*"$javaHome/include/jni.h",*/"$libsDir/core.h", "$libsDir/core.c")
             includeDirs(
                 libsDir,
-                File(javaHome, "include").absolutePath,
+                /*File(javaHome, "include").absolutePath,
                 File(javaHome, "include/darwin").absolutePath,
                 File(javaHome, "include/linux").absolutePath,
-                File(javaHome, "include/win32").absolutePath
+                File(javaHome, "include/win32").absolutePath*/
             )
             packageName("org.pampanet.native.core")
         }
