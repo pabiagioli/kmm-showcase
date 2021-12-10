@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "My_Application"
+rootProject.name = "JNIShowcase"
 include(":androidApp")
 include(":shared")

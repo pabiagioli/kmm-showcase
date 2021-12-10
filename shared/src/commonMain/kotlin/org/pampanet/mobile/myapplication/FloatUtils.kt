@@ -1,6 +1,6 @@
 package org.pampanet.mobile.myapplication
 
-expect class FloatUtils {
+expect object FloatUtils {
     fun toSFloat(byteArray: ByteArray, offset: Int): Float
     fun fromSFloat(num: Float): Int
 }

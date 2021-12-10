@@ -1,18 +1,26 @@
 package org.pampanet.mobile.myapplication
 
 import kotlinx.cinterop.convert
-import platform.android.ANDROID_LOG_ERROR
-import platform.android.ANDROID_LOG_INFO
-import platform.android.__android_log_write
+import platform.android.*
 
-object Commons {
+data class JniClass(val jclass: jclass)
+data class JniObject(val jobject: jobject)
+data class JniMethod(val jmethod: jmethodID)
 
-    fun logError(message: String) {
-        __android_log_write(ANDROID_LOG_ERROR.convert(), "KonanActivity", message)
-    }
+fun asJniClass(jclass: jclass?) =
+    if (jclass != null) JniClass(jclass) else null
 
-    fun logInfo(message: String) {
-        __android_log_write(ANDROID_LOG_INFO.convert(), "KonanActivity", message)
-    }
+fun asJniObject(jobject: jobject?) =
+    if (jobject != null) JniObject(jobject) else null
 
+fun asJniMethod(jmethodID: jmethodID?) =
+    if (jmethodID != null) JniMethod(jmethodID) else null
+
+
+fun logError(tag: String, message: String) {
+    __android_log_write(ANDROID_LOG_ERROR.convert(), tag, message)
+}
+
+fun logInfo(tag: String, message: String) {
+    __android_log_write(ANDROID_LOG_INFO.convert(), tag, message)
 }

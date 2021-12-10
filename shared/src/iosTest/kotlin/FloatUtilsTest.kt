@@ -12,9 +12,9 @@ class FloatUtilsTest {
     fun testFloatUtils() {
         val elapsed = measureTime {
             val mock = 36.4f
-            val utils = FloatUtils()
-            val encoded = utils.fromSFloat(mock)
-            val decoded = utils.toSFloat(numberToByteArray(encoded),0)
+            //val utils = FloatUtils()
+            val encoded = FloatUtils.fromSFloat(mock)
+            val decoded = FloatUtils.toSFloat(numberToByteArray(encoded),0)
             assertEquals(decoded, mock)
         }
         println("total elapsed time : ${elapsed.toDouble(DurationUnit.MILLISECONDS)}")

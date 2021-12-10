@@ -6,7 +6,7 @@ import org.pampanet.native.core.read_sfloat
 import org.pampanet.native.core.write_sfloat
 import platform.posix.`true`
 
-actual class FloatUtils {
+actual object FloatUtils {
     actual fun toSFloat(byteArray: ByteArray, offset: Int): Float {
         val cArray = byteArray.toUByteArray().toCValues()
         val data = getUint16(cArray, offset, `true`)

@@ -19,13 +19,20 @@ class NdkBridge(val env: CPointer<JNIEnvVar>) {
     private val fExceptionCheck = innerEnv.ExceptionCheck!!
     private val fExceptionDescribe = innerEnv.ExceptionDescribe!!
     private val fExceptionClear = innerEnv.ExceptionClear!!
-    private val fGetArrayLength = innerEnv.GetArrayLength!!
+    val fGetArrayLength = innerEnv.GetArrayLength!!
     private val fGetObjectArrayElement = innerEnv.GetObjectArrayElement!!
     private val fNewObjectArray = innerEnv.NewObjectArray!!
+    val fNewByteArray = innerEnv.NewByteArray!!
     private val fSetObjectArrayElement = innerEnv.SetObjectArrayElement!!
     private val fDeleteLocalRef = innerEnv.DeleteLocalRef!!
     private val fGetObjectClass = innerEnv.GetObjectClass!!
+
+    /**
+     * Java/Kotlin naming convention discourages using stdint.h typedefs,
+     * but for clarity, I'm using int8 as byte
+     */
     val fGetInt8ArrayElements = innerEnv.GetByteArrayElements!!
+    val fGetInt8ArrayRegion = innerEnv.GetByteArrayRegion!!
 
     val fPushLocalFrame = innerEnv.PushLocalFrame!!
     val fPopLocalFrame = innerEnv.PopLocalFrame!!

@@ -3,19 +3,11 @@ package org.pampanet.mobile.myapplication
 import kotlinx.cinterop.*
 import platform.android.*
 
-data class JniClass(val jclass: jclass)
-data class JniObject(val jobject: jobject)
-data class JniMethod(val jmethod: jmethodID)
 
-fun asJniClass(jclass: jclass?) =
-    if (jclass != null) JniClass(jclass) else null
-
-fun asJniObject(jobject: jobject?) =
-    if (jobject != null) JniObject(jobject) else null
-
-fun asJniMethod(jmethodID: jmethodID?) =
-    if (jmethodID != null) JniMethod(jmethodID) else null
-
+/**
+ * This class takes a JavaVMVar which can be taken from the JNI_OnLoad event,
+ * otherwise it's a little useless since we need the JNIEnv
+ */
 class JniBridge(val vm: CPointer<JavaVMVar>) {
     private val vmFunctions: JNIInvokeInterface = vm.pointed.pointed!!
     val jniEnv = memScoped {

@@ -1,16 +1,14 @@
 package org.pampanet.mobile.myapplication
 
-actual class FloatUtils {
-    companion object {
-        init {
-            System.loadLibrary("corenative")
-        }
-        @JvmStatic
-        external fun toNativeSFloat(byteArray: ByteArray, offset: Int): Float
-        @JvmStatic
-        external fun fromNativeSFloat(num: Float): Int
+actual object FloatUtils {
+    init {
+        System.loadLibrary("corenative")
     }
 
-    actual fun toSFloat(byteArray: ByteArray, offset: Int): Float = Companion.toNativeSFloat(byteArray, offset)
-    actual fun fromSFloat(num: Float): Int = Companion.fromNativeSFloat(num)
+    private external fun toNativeSFloat(byteArray: ByteArray, offset: Int): Float
+    private external fun fromNativeSFloat(num: Float): Int
+
+    actual fun toSFloat(byteArray: ByteArray, offset: Int): Float =
+        toNativeSFloat(byteArray, offset)
+    actual fun fromSFloat(num: Float): Int = fromNativeSFloat(num)
 }
