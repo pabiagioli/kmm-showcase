@@ -17,6 +17,10 @@ import kotlinx.coroutines.launch
 import org.pampanet.mobile.audio.OboeEngine
 import org.pampanet.mobile.core.CommonTools
 import org.pampanet.mobile.core.FloatUtils
+import org.pampanet.mobile.audio.Freq2NoteUtils
+import org.pampanet.mobile.audio.Freq2NoteUtils.getNote
+import org.pampanet.mobile.audio.GaugeDial
+
 
 fun greet(): String {
     return Greeting().greeting()
@@ -40,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestMic()
-        val tv: TextView = findViewById(R.id.text_view)
+        //val tv: TextView = findViewById(R.id.text_view)
         //tv.text = "${greet()} ${makeFloatUtilTest()}"
 
     }
@@ -52,9 +56,14 @@ class MainActivity : AppCompatActivity() {
             oboeEngine.pitchTracker().flowOn(Dispatchers.IO).collect {
                 if (currentPitch != it) {
                     currentPitch = it
+                    val noteFromPitch = getNote(currentPitch, false)
                     Log.d("MainActivity", "pitch = $it")
-                    val tv: TextView = findViewById(R.id.text_view)
-                    tv.text = "pitch = $it"
+                    val noteTunner : TextView = findViewById(R.id.notaAfinadorTV)
+                    val freqDisplayTV: TextView = findViewById(R.id.freqAfinadorTV)
+                    val gaugeDial: GaugeDial = findViewById(R.id.pampanet_gauge_dial)
+                    gaugeDial.angleDegrees = (Freq2NoteUtils.getAngleFromHz(currentPitch))
+                    noteTunner.text = noteFromPitch
+                    freqDisplayTV.text = "$currentPitch Hz"
                 }
                 //tv.text = "pitch = $it"
             }
