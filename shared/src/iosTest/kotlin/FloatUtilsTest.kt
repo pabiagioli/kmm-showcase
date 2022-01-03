@@ -1,5 +1,5 @@
-import org.pampanet.mobile.myapplication.CommonTools.numberToByteArray
-import org.pampanet.mobile.myapplication.FloatUtils
+import org.pampanet.mobile.core.CommonTools.numberToByteArray
+import org.pampanet.mobile.core.FloatUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.DurationUnit

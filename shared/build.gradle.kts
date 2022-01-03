@@ -10,30 +10,62 @@ plugins {
 
 version = "1.0"
 
-val libsDir = projectDir.resolve("src/coreNative")
+val nativeCoreLibDir = projectDir.resolve("src/nativeCore")
+val nativeAudioLibDir = projectDir.resolve("src/nativeAudio")
 
 
 val androidPresets = mapOf(
-    "androidNativeArm32" to "$libsDir/armeabi-v7a",
-    "androidNativeArm64" to "$libsDir/arm64-v8a",
-    "androidNativeX86" to "$libsDir/x86",
-    "androidNativeX64" to "$libsDir/x86_64"
+    "androidNativeArm32" to "$nativeCoreLibDir/armeabi-v7a",
+    "androidNativeArm64" to "$nativeCoreLibDir/arm64-v8a",
+    "androidNativeX86" to "$nativeCoreLibDir/x86",
+    "androidNativeX64" to "$nativeCoreLibDir/x86_64"
 )
 
 kotlin {
-    android(){
-        publishLibraryVariants("release")
+    android {
+        //publishLibraryVariants("release")
     }
-    androidNativeX86() {
-        binaries { sharedLib() }
+    androidNativeArm32(){
+        binaries {
+            sharedLib {
+                baseName = "nativecore"
+            }
+            /*executable(){
+                binaryOptions["androidProgramType"] = "standalone"
+            }*/
+        }
         configureCInterops(this)
         renameLib(this)
     }
-    iosX64() {
+    androidNativeArm64() {
+        binaries {
+            sharedLib {
+                baseName = "nativecore"
+            }
+            /*executable(){
+                binaryOptions["androidProgramType"] = "standalone"
+            }*/
+        }
+        configureCInterops(this)
+        renameLib(this)
+    }
+    androidNativeX86 {
+        binaries {
+            sharedLib {
+                baseName = "nativecore"
+            }
+            /*executable(){
+                binaryOptions["androidProgramType"] = "standalone"
+            }*/
+        }
+        configureCInterops(this)
+        renameLib(this)
+    }
+    iosX64 {
         configureCInterops(this)
         compilations["main"].enableEndorsedLibs = true
     }
-    iosArm64() {
+    iosArm64 {
         configureCInterops(this)
         compilations["main"].enableEndorsedLibs = true
     }
@@ -60,6 +92,9 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
+                implementation("com.google.oboe:oboe:1.6.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC2")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0-RC2")
             }
         }
         val androidTest by getting {
@@ -70,14 +105,14 @@ kotlin {
         }
         val androidNativeX86Main by getting
         //val androidNativeX64Main by getting
-        //val androidNativeArm32Main by getting
-        //val androidNativeArm64Main by getting
+        val androidNativeArm32Main by getting
+        val androidNativeArm64Main by getting
         val androidNativeMain by creating {
             dependsOn(commonMain)
             androidNativeX86Main.dependsOn(this)
             //androidNativeX64Main.dependsOn(this)
-            //androidNativeArm32Main.dependsOn(this)
-            //androidNativeArm64Main.dependsOn(this)
+            androidNativeArm32Main.dependsOn(this)
+            androidNativeArm64Main.dependsOn(this)
         }
 
         val androidNativeX86Test by getting
@@ -127,7 +162,9 @@ android {
     sourceSets{
         this["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
         this["main"].setRoot("src/androidMain")
-        this["main"].jniLibs.srcDir(libsDir)
+        this["main"].jniLibs {
+            srcDirs(nativeCoreLibDir, nativeAudioLibDir)
+        }
     }
 
     defaultConfig {
@@ -135,11 +172,26 @@ android {
         targetSdk = 31
         ndk {
             abiFilters.addAll(listOf(
-                //"armeabi-v7a",
-                //"arm64-v8a",
+                "armeabi-v7a",
+                "arm64-v8a",
                 "x86",
                 //"x86_64"
             ))
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+                arguments("-DANDROID_STL=c++_shared")
+            }
+        }
+    }
+    buildFeatures {
+        prefab = true
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("src/nativeAudio/cpp/CMakeLists.txt")
+            version = "3.10.2"
         }
     }
 }
@@ -148,15 +200,16 @@ android {
 fun configureCInterops(it: KotlinNativeTarget, compilationName: String  = "main"): NamedDomainObjectContainer<DefaultCInteropSettings>? {
     it.compilations[compilationName].cinterops {
         val core by creating {
-            defFile("$libsDir/core.def")
-            //val javaHome = File(System.getenv("JAVA_HOME"))
-            headers(/*"$javaHome/include/jni.h",*/"$libsDir/core.h", "$libsDir/core.c")
+            defFile("$nativeCoreLibDir/core.def")
+            val javaHome = System.getenv("JAVA_HOME")
+            val oboeDir = "/Users/pampanet/CLionProjects/oboe"
+            headers(
+                "$javaHome/include/jni.h",
+                "$nativeCoreLibDir/core.h",
+                "$nativeCoreLibDir/core.c",
+            )
             includeDirs(
-                libsDir,
-                /*File(javaHome, "include").absolutePath,
-                File(javaHome, "include/darwin").absolutePath,
-                File(javaHome, "include/linux").absolutePath,
-                File(javaHome, "include/win32").absolutePath*/
+                "$javaHome/include", "$javaHome/include/darwin", nativeCoreLibDir
             )
             packageName("org.pampanet.native.core")
         }
@@ -169,13 +222,13 @@ fun renameLib(target: KotlinNativeTarget) {
     NativeBuildType.values().forEach {
         val executable = target.binaries.getSharedLib(it)
         val linkTask = executable.linkTask
-        val binaryFile = executable.outputFile
+        val binaryDir = executable.outputDirectory
 
         linkTask.doLast {
             copy {
-                from(binaryFile)
+                from(binaryDir)
                 into(File(libDir))
-                rename { "libcorenative.so" }
+                //rename { "libnativecore.so" }
             }
         }
 
@@ -185,4 +238,6 @@ fun renameLib(target: KotlinNativeTarget) {
     }
 }
 
-println("libsDir = $libsDir")
+println("Native Core Lib = $nativeCoreLibDir")
+println("Native Audio Lib = $nativeAudioLibDir")
+

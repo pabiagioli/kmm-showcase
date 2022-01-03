@@ -1,0 +1,4 @@
+headers = CAPI.h
+staticLibraries = libnativeAudio.a
+libraryPaths = /Users/pampanet/dev-folder/pampanet/MyApplication/shared/src/nativeAudio
+#-x c++ -std=c++17
